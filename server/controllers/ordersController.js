@@ -1,5 +1,5 @@
-const Order = require('../models/orders');
-const Orders = require('../models/orders');
+const Order = require('../models/Order');
+const Orders = require('../models/Order');
 
 
 const CreateOrders = (req, res) => {

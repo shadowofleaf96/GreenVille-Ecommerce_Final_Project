@@ -1,4 +1,4 @@
-const Product = require('../models/products');
+const Product = require('../models/Product');
 
 const homePage = (req, res) => {
     res.send('Hello, Express.js!');
