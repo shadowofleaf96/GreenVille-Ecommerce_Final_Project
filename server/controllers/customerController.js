@@ -4,7 +4,7 @@ const { Customer } = require("../models/Customer");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-require('dotenv').config({ path: '../.env' });
+require("dotenv").config({ path: "../.env" });
 const { createTransport } = require("nodemailer");
 const { log } = require("console");
 const secretKey = process.env.SECRETKEY;
@@ -46,7 +46,7 @@ const CustomerController = {
           res.cookie("customer_access_token", accessToken, {
             httpOnly: false,
             secure: true,
-            sameSite: 'None', // Allow cross-origin access
+            sameSite: "none",
           });
 
           const refreshTokenPayload = {
@@ -60,7 +60,7 @@ const CustomerController = {
           res.cookie("customer_refresh_token", refreshToken, {
             httpOnly: false,
             secure: true,
-            sameSite: 'None', // Allow cross-origin access
+            sameSite: "none",
           });
 
           return res.status(200).json({

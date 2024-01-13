@@ -34,7 +34,6 @@ export default function LoginView() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { t } = useTranslation();
-
   const [user_name, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +53,7 @@ export default function LoginView() {
   const handleCloseForgotPasswordDialog = () => {
     setOpenForgotPasswordDialog(false);
   };
-  
+
   const openSnackbar = (message) => {
     setSnackbarMessage(message);
     setSnackbarOpen(true);
@@ -68,9 +67,12 @@ export default function LoginView() {
     try {
       setResetPasswordLoading(true);
 
-      const response = await axios.post(VITE_API_URL + "v1/users/forgot-password", {
-        email: resetEmail,
-      });
+      const response = await axios.post(
+        VITE_API_URL + "v1/users/forgot-password",
+        {
+          email: resetEmail,
+        }
+      );
 
       openSnackbar(response.data.message);
 
@@ -95,9 +97,14 @@ export default function LoginView() {
         password,
       };
 
-      const response = await axios.post(VITE_API_URL + "v1/users/login", requestBody, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        VITE_API_URL + "v1/users/login",
+        requestBody,
+        {
+          withCredentials: true,
+          crossDomain: true,
+        }
+      );
 
       if (response.status === 200) {
         dispatch(

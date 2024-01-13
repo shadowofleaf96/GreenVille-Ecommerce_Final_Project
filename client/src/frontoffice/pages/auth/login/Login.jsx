@@ -83,7 +83,7 @@ const Login = () => {
           password,
           rememberMe,
         },
-        { withCredentials: true }
+        {withCredentials: true}
       );
 
       if (response.status === 200) {

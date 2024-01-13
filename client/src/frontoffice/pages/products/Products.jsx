@@ -7,7 +7,7 @@ import { Link, useParams } from "react-router-dom";
 import Product from "./Product";
 import Loader from "../../components/loader/Loader";
 import styles from "./Products.module.scss";
-import Pagination from "react-js-pagination";
+import ReactPaginate from "react-paginate";
 import "rc-slider/assets/index.css";
 import Navbar from "../../components/header/Navbar";
 import Footer from "../../components/footer/Footer";
@@ -187,17 +187,16 @@ const Products = () => {
                   </div>
                   {resPerPage <= count && (
                     <div className="d-flex justify-content-center mt-5">
-                      <Pagination
-                        activePage={currentPage}
-                        itemsCountPerPage={resPerPage}
-                        totalItemsCount={productsCount}
-                        onChange={setCurrentPageNo}
-                        nextPageText={"Next"}
-                        prevPageText={"Prev"}
-                        firstPageText={"First"}
-                        lastPageText={"Last"}
-                        itemClass="page-item"
-                        linkClass="page-link"
+                      <ReactPaginate
+                        previousLabel={"Prev"}
+                        nextLabel={"Next"}
+                        breakLabel={"..."}
+                        pageCount={Math.ceil(productsCount / resPerPage)}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        onPageChange={handlePageChange}
+                        containerClassName={"pagination"}
+                        activeClassName={"active"}
                       />
                     </div>
                   )}
