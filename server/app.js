@@ -20,6 +20,8 @@ app.use(
   })
 );
 
+app.options("*", cors());
+
 const staticPath = path.join(__dirname, "public", "images");
 app.use(
   "/images",
