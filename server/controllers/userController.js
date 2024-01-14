@@ -10,8 +10,10 @@ const crypto = require("crypto");
 const secretKey = process.env.SECRETKEY;
 const secretRefreshKey = process.env.REFRESHSECRETLEY;
 const expiration = process.env.EXPIRATIONDATE;
-import {LocalStorage} from 'node-localstorage' 
-var localStorage = new LocalStorage('./scratch'); 
+if (typeof localStorage === "undefined" || localStorage === null) {
+  var LocalStorage = require("node-localstorage").LocalStorage;
+  localStorage = new LocalStorage("./scratch");
+}
 
 const createUser = async (req, res) => {
   const user_image = req.file;
@@ -351,7 +353,6 @@ const loginUser = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" + error });
   }
 };
-
 
 const forgotPassword = async (req, res) => {
   try {
