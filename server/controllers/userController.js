@@ -10,6 +10,8 @@ const crypto = require("crypto");
 const secretKey = process.env.SECRETKEY;
 const secretRefreshKey = process.env.REFRESHSECRETLEY;
 const expiration = process.env.EXPIRATIONDATE;
+import {LocalStorage} from 'node-localstorage' 
+var localStorage = new LocalStorage('./scratch'); 
 
 const createUser = async (req, res) => {
   const user_image = req.file;

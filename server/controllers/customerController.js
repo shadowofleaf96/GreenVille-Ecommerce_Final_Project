@@ -10,6 +10,8 @@ const { log } = require("console");
 const secretKey = process.env.SECRETKEY;
 const secretRefreshKey = process.env.REFRESHSECRETLEY;
 const expiration = process.env.EXPIRATIONDATE;
+import {LocalStorage} from 'node-localstorage' 
+var localStorage = new LocalStorage('./scratch'); 
 
 function verifyToken(token, callback) {
   jwt.verify(token, secretKey, (err, decoded) => {

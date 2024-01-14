@@ -3,6 +3,8 @@ require("dotenv").config({ path: "../.env" });
 const secretKey = process.env.SECRETKEY;
 const secretRefreshKey = process.env.REFRESHSECRETLEY;
 const jwt = require("jsonwebtoken");
+import {LocalStorage} from 'node-localstorage' 
+var localStorage = new LocalStorage('./scratch'); 
 
 const verifyToken = (req, res, next) => {
   const userToken =
