@@ -11,16 +11,12 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    preflightContinue: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     origin: [
       "https://greenville-frontend.onrender.com",
       "http://localhost:5173",
     ],
   })
 );
-
-app.options("*", cors());
 
 const staticPath = path.join(__dirname, "public", "images");
 app.use(
