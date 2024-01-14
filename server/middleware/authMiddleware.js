@@ -1,16 +1,20 @@
 // Shadow Of Leaf was Here
-require('dotenv').config({ path: '../.env' });
+require("dotenv").config({ path: "../.env" });
 const secretKey = process.env.SECRETKEY;
 const secretRefreshKey = process.env.REFRESHSECRETLEY;
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
-  const userToken = req.cookies.user_access_token || req.cookies.customer_access_token;
+  const userToken =
+    localStorage.getItem("user_access_token") ||
+    localStorage.getItem("customer_access_token");
 
   if (!userToken) {
-    return res.status(403).send("A token is required for authentication, login again and repeat");
+    return res
+      .status(403)
+      .send("A token is required for authentication, login again and repeat");
   }
-  
+
   try {
     const decoded = jwt.verify(userToken, secretKey);
     req.user = decoded;
@@ -43,6 +47,5 @@ module.exports = {
   requireAdmin,
   requireAdminOrManager,
 };
-
 
 module.exports = { verifyToken, requireAdmin, requireAdminOrManager };
