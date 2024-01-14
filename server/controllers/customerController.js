@@ -35,7 +35,6 @@ const CustomerController = {
         );
 
         if (isPasswordValid) {
-          // Generate JWT token
           const payload = {
             id: customer._id,
           };
@@ -43,11 +42,7 @@ const CustomerController = {
             expiresIn: "8h",
           });
 
-          res.cookie("customer_access_token", accessToken, {
-            httpOnly: false,
-            secure: true,
-            sameSite: "none",
-          });
+          localStorage.setItem("customer_access_token", accessToken);
 
           const refreshTokenPayload = {
             id: customer._id,
@@ -57,11 +52,7 @@ const CustomerController = {
             expiresIn: "7d",
           });
 
-          res.cookie("customer_refresh_token", refreshToken, {
-            httpOnly: false,
-            secure: true,
-            sameSite: "none",
-          });
+          localStorage.setItem("customer_refresh_token", accessToken);
 
           return res.status(200).json({
             message: "Login success",

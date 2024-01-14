@@ -306,11 +306,8 @@ const loginUser = async (req, res, next) => {
           expiresIn: "8h",
         });
 
-        res.cookie("user_access_token", accessToken, {
-          httpOnly: true,
-          sameSite: "none", // Allow cross-origin access
-          secure: true,
-        });
+        // Set access token in localStorage
+        localStorage.setItem("user_access_token", accessToken);
 
         // Generate Refresh Token
         const refreshTokenPayload = {
@@ -321,11 +318,8 @@ const loginUser = async (req, res, next) => {
           expiresIn: "7d",
         });
 
-        res.cookie("user_refresh_token", refreshToken, {
-          httpOnly: true, //--> Fix this Later with react
-          sameSite: "none", // Allow cross-origin access
-          secure: true, //--> SET TO TRUE ON PRODUCTION
-        });
+        // Set refresh token in localStorage
+        localStorage.setItem("user_refresh_token", refreshToken);
 
         // Update last_login
         user.last_login = new Date();
@@ -355,6 +349,7 @@ const loginUser = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 const forgotPassword = async (req, res) => {
   try {
