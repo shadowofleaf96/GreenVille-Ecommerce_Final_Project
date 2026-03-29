@@ -108,7 +108,7 @@ export default function Home() {
       <hr />
 
       {loading ? (
-        <Loader />
+        <Loader inline={true} />
       ) : (
         <motion.div
           ref={fsRef}

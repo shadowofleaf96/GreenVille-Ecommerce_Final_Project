@@ -79,7 +79,17 @@ export default function DeliveryView() {
     }
   };
 
-  if (loading && !data) return <Loader />;
+  if (loading && !data) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Iconify
+          icon="svg-spinners:180-ring-with-bg"
+          width={40}
+          className="text-primary"
+        />
+      </div>
+    );
+  }
 
   if (error) {
     return (

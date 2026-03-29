@@ -100,7 +100,6 @@ export default function SubCategoryView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) return <Loader />;
   if (error)
     return (
       <p className="text-red-500">
@@ -166,16 +165,12 @@ export default function SubCategoryView() {
       await axiosInstance.delete(
         `/subcategories/${selectedDeleteSubCategoryId}`,
       );
-      dispatch(
-        setData(
-          data.filter((item) => item._id !== selectedDeleteSubCategoryId),
-        ),
-      );
+      await fetchData();
       toast.success(t("Deleted successfully"));
       closeDeleteConfirmation();
-      // eslint-disable-next-line no-unused-vars
     } catch (err) {
       toast.error(t("Delete failed"));
+      throw err;
     } finally {
       setLoadingDelete(false);
     }
@@ -261,7 +256,7 @@ export default function SubCategoryView() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24">
+                    <TableCell colSpan={5} className="py-24">
                       <div className="flex justify-center items-center h-full">
                         <Iconify
                           icon="svg-spinners:180-ring-with-bg"
@@ -375,17 +370,22 @@ export default function SubCategoryView() {
         open={openNewForm}
         onClose={() => setOpenNewForm(false)}
         onSave={async (newData, file) => {
-          const formData = new FormData();
-          formData.append(
-            "subcategory_name",
-            JSON.stringify(newData.subcategory_name),
-          );
-          formData.append("category_id", newData.category_id);
-          formData.append("status", newData.status);
-          if (file) formData.append("subcategory_image", file);
-          const response = await axiosInstance.post("/subcategories", formData);
-          dispatch(setData([...data, response.data.data]));
-          toast.success(t("Created successfully"));
+          try {
+            const formData = new FormData();
+            formData.append(
+              "subcategory_name",
+              JSON.stringify(newData.subcategory_name),
+            );
+            formData.append("category_id", newData.category_id);
+            formData.append("status", newData.status);
+            if (file) formData.append("subcategory_image", file);
+            await axiosInstance.post("/subcategories", formData);
+            await fetchData();
+            toast.success(t("Created successfully"));
+          } catch (error) {
+            toast.error(error.response?.data?.message || t("Error creating subcategory"));
+            throw error;
+          }
         }}
       />
 
@@ -395,26 +395,26 @@ export default function SubCategoryView() {
           open={!!editing}
           onClose={() => setEditing(null)}
           onSave={async (editedData, file) => {
-            const formData = new FormData();
-            formData.append(
-              "subcategory_name",
-              JSON.stringify(editedData.subcategory_name),
-            );
-            formData.append("category_id", editedData.category_id);
-            formData.append("status", editedData.status);
-            if (file) formData.append("subcategory_image", file);
-            const response = await axiosInstance.put(
-              `/subcategories/${editing._id}`,
-              formData,
-            );
-            const updated = data.map((item) =>
-              item._id === editing._id
-                ? { ...item, ...response.data.data }
-                : item,
-            );
-            dispatch(setData(updated));
-            toast.success(t("Updated successfully"));
-            setEditing(null);
+            try {
+              const formData = new FormData();
+              formData.append(
+                "subcategory_name",
+                JSON.stringify(editedData.subcategory_name),
+              );
+              formData.append("category_id", editedData.category_id);
+              formData.append("status", editedData.status);
+              if (file) formData.append("subcategory_image", file);
+              await axiosInstance.put(
+                `/subcategories/${editing._id}`,
+                formData,
+              );
+              await fetchData();
+              toast.success(t("Updated successfully"));
+              setEditing(null);
+            } catch (error) {
+              toast.error(error.response?.data?.message || t("Error updating subcategory"));
+              throw error;
+            }
           }}
         />
       )}

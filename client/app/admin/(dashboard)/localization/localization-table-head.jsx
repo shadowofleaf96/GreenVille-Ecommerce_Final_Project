@@ -21,11 +21,19 @@ export default function LocalizationTableHead({
   return (
     <TableHeader>
       <TableRow className="hover:bg-transparent border-b border-gray-100">
-        <TableHead className="w-[50px] pl-6">
+        <TableHead className="w-12.5 pl-6">
           <Checkbox
-            checked={rowCount > 0 && numSelected === rowCount}
+            checked={
+              numSelected === rowCount && rowCount > 0
+                ? true
+                : numSelected > 0
+                ? "indeterminate"
+                : false
+            }
             onCheckedChange={(checked) =>
-              onSelectAllClick({ target: { checked } })
+              onSelectAllClick({
+                target: { checked: checked === "indeterminate" ? true : checked },
+              })
             }
             aria-label="Select all"
             className="rounded-md border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"

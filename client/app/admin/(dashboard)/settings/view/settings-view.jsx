@@ -379,6 +379,18 @@ export default function SettingsView() {
     [t],
   );
 
+  if (loading && !settingsData) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Iconify
+          icon="svg-spinners:180-ring-with-bg"
+          width={40}
+          className="text-primary"
+        />
+      </div>
+    );
+  }
+
   return (
     <motion.div
       variants={staggerContainer}
@@ -410,6 +422,52 @@ export default function SettingsView() {
           unsavedChanges={isDirty}
         />
       </motion.div>
+      <AnimatePresence>
+        {settingsData?.website_title?.en === "My Modern Store" &&
+          !settingsData?.logo_url && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-10 p-8 bg-linear-to-br from-primary to-primary/80 rounded-[2.5rem] shadow-2xl shadow-primary/20 text-white relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/10 rounded-full -ml-16 -mb-16 blur-2xl" />
+
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-md border border-white/30 shrink-0">
+                  <Iconify icon="solar:magic-stick-bold-duotone" width={40} />
+                </div>
+
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-2xl font-black uppercase tracking-tight">
+                    {t("Welcome to Your New Store!")}
+                  </h3>
+                  <p className="text-white/80 font-medium mt-1">
+                    {t(
+                      "Follow these simple steps to customize your brand and go live.",
+                    )}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap justify-center md:justify-end gap-3 bg-black/10 p-4 rounded-3xl backdrop-blur-sm">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                    1. {t("Set Logo")}
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                    2. {t("Name Store")}
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                    3. {t("Pick Colors")}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+      </AnimatePresence>
 
       <div className="flex flex-col lg:flex-row gap-10">
         {/* Sidebar Navigation */}

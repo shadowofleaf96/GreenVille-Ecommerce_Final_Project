@@ -25,10 +25,16 @@ export default function ProductTableHead({
       <TableRow className="hover:bg-transparent">
         <TableHead className="p-4 w-12 text-center">
           <Checkbox
-            checked={rowCount > 0 && numSelected === rowCount}
+            checked={
+              numSelected === rowCount && rowCount > 0
+                ? true
+                : numSelected > 0
+                ? "indeterminate"
+                : false
+            }
             onCheckedChange={(checked) => {
               onSelectAllClick({
-                target: { checked },
+                target: { checked: checked === "indeterminate" ? true : checked },
               });
             }}
           />

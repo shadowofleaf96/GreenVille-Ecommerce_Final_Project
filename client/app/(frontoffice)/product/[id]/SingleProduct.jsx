@@ -342,6 +342,7 @@ const SingleProduct = () => {
                     <LazyImage
                       src={optimizeImage(image, 100)}
                       alt={`Thumb ${index}`}
+                      loaderSize={24}
                       wrapperClassName="w-full h-full flex items-center justify-center relative z-10"
                       className="max-w-full max-h-full object-contain drop-shadow-xl"
                     />

@@ -147,13 +147,13 @@ export default function CategoryView() {
     setLoadingDelete(true);
     try {
       await axiosInstance.delete(`/categories/${categoryId}`);
-      const updatedData = data.filter((item) => item._id !== categoryId);
-      dispatch(setData(updatedData));
+      await fetchData();
       toast.success(t("categoryPage.deleteSuccess"));
       closeDeleteConfirmation();
     } catch (error) {
       console.error("Error deleting category:", error);
       toast.error(t("categoryPage.deleteError"));
+      throw error;
     } finally {
       setLoadingDelete(false);
     }
@@ -171,13 +171,14 @@ export default function CategoryView() {
         formData.append("category_image", imageFile);
       }
 
-      const response = await axiosInstance.post("/categories", formData);
-      dispatch(setData([...data, response.data.data]));
+      await axiosInstance.post("/categories", formData);
+      await fetchData();
       toast.success(t("categoryPage.createSuccess"));
       setNewCategoryFormOpen(false);
     } catch (error) {
       console.error("Error creating category:", error);
-      toast.error(t("categoryPage.createError"));
+      toast.error(error.response?.data?.error || t("categoryPage.createError"));
+      throw error;
     }
   };
 
@@ -193,21 +194,19 @@ export default function CategoryView() {
         formData.append("category_image", imageFile);
       }
 
-      const response = await axiosInstance.put(
+      await axiosInstance.put(
         `/categories/${editedCategory._id}`,
         formData,
       );
 
-      const updatedData = data.map((item) =>
-        item._id === editedCategory._id ? response.data.data : item,
-      );
-      dispatch(setData(updatedData));
+      await fetchData();
       toast.success(t("categoryPage.updateSuccess"));
       setOpenModal(false);
       setEditingCategory(null);
     } catch (error) {
       console.error("Error updating category:", error);
-      toast.error(t("categoryPage.updateError"));
+      toast.error(error.response?.data?.message || t("categoryPage.updateError"));
+      throw error;
     }
   };
 
@@ -254,7 +253,6 @@ export default function CategoryView() {
   const notFound = !dataFiltered.length && !loading;
   const totalPages = Math.ceil((dataFiltered.length || 0) / rowsPerPage);
 
-  if (loading && !data) return <Loader />;
 
   if (error) {
     return (
@@ -328,7 +326,7 @@ export default function CategoryView() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="h-24">
+                    <TableCell colSpan={4} className="py-24">
                       <div className="flex justify-center items-center h-full">
                         <Iconify
                           icon="svg-spinners:180-ring-with-bg"

@@ -2,6 +2,8 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import dns from "dns";
 
+import { seedDatabase } from "../utils/seeding.js";
+
 dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1", "1.0.0.1"]);
 
 const connectDB = async (retries = 5) => {
@@ -14,6 +16,9 @@ const connectDB = async (retries = 5) => {
 
     await mongoose.connect(process.env.MONGOOSE, options);
     console.log("✅ Connected to MongoDB Atlas");
+    
+    // Auto-seed if database is empty
+    await seedDatabase();
   } catch (err) {
     console.error(
       `❌ Error connecting to the database (${retries} retries left):`,

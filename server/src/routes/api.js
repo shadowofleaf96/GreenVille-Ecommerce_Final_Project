@@ -20,12 +20,11 @@ import localeRoute from "./localeRoute.js";
 import cartRoute from "./cartRoute.js";
 
 const app = express();
-import apicache from "apicache";
-const cache = apicache.middleware;
 
-app.use("/v1/products", cache("5 minutes"), productRoute);
-app.use("/v1/categories", cache("5 minutes"), categoryRoute);
-app.use("/v1/subcategories", cache("5 minutes"), subcategoryRoute);
+
+app.use("/v1/products", productRoute);
+app.use("/v1/categories", categoryRoute);
+app.use("/v1/subcategories", subcategoryRoute);
 app.use("/v1/site-settings", settingsRoute);
 app.use("/v1/reviews", reviewRoute);
 app.use("/v1/customers", customerRoute);

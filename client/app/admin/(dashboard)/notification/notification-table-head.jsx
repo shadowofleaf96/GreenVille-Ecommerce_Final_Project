@@ -26,11 +26,19 @@ export default function NotificationTableHead({
   return (
     <TableHeader className="bg-gray-50/50 text-gray-500">
       <TableRow className="hover:bg-transparent border-none">
-        <ShadcnTableHead className="w-[50px] pl-6 py-4">
+        <ShadcnTableHead className="w-12.5 pl-6 py-4">
           <Checkbox
-            checked={rowCount > 0 && numSelected === rowCount}
+            checked={
+              numSelected === rowCount && rowCount > 0
+                ? true
+                : numSelected > 0
+                ? "indeterminate"
+                : false
+            }
             onCheckedChange={(checked) =>
-              onSelectAllClick({ target: { checked } })
+              onSelectAllClick({
+                target: { checked: checked === "indeterminate" ? true : checked },
+              })
             }
             aria-label="Select all"
             className="rounded-md border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"

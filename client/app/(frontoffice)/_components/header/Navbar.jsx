@@ -294,7 +294,7 @@ const Navbar = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300 text-gray-600 w-12 h-16"
+                      className="rounded-full hover:bg-primary/10 hover:text-primary transition-all duration-300 text-gray-600 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"
                     >
                       <Iconify icon="solar:user-circle-linear" width={24} />
                     </Button>

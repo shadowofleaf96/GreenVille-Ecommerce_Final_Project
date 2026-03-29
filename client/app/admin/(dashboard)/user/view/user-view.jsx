@@ -96,12 +96,21 @@ export default function UserView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  if (loading) {
-    return <Loader />;
-  }
 
   if (error) {
     return <div className="p-4 text-red-600">Error: {error.message}</div>;
+  }
+
+  if (loading && !data) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Iconify
+          icon="svg-spinners:180-ring-with-bg"
+          width={40}
+          className="text-primary"
+        />
+      </div>
+    );
   }
 
   if (!data && !loading) {
@@ -415,7 +424,7 @@ export default function UserView() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="h-24">
+                    <TableCell colSpan={9} className="py-24">
                       <div className="flex justify-center items-center h-full">
                         <Iconify
                           icon="svg-spinners:180-ring-with-bg"

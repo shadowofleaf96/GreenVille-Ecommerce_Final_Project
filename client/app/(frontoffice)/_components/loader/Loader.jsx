@@ -1,64 +1,69 @@
 "use client";
 
 import { useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
+import Iconify from "@/components/shared/iconify";
 import LazyImage from "@/components/shared/lazyimage/LazyImage";
+import { motion, AnimatePresence } from "framer-motion";
 import { premiumTransition } from "@/utils/animations";
 
-const Loader = () => {
+const Loader = ({ inline = false, loading = true }) => {
   const { data: settings } = useSelector((state) => state.adminSettings);
 
   const logoUrl = settings?.logo_url
     ? `${settings.logo_url}`
     : "/assets/logo.webp";
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={premiumTransition}
-      className="fixed inset-0 z-9999 flex items-center justify-center bg-white"
-    >
-      <div className="relative flex flex-col items-center">
-        {/* Decorative Background Element */}
-        <div className="absolute -inset-10 bg-primary/5 blur-3xl rounded-full" />
-
-        {/* Animated Logo Container */}
-        <motion.div
-          animate={{
-            scale: [0.95, 1.05, 0.95],
-            opacity: [0.8, 1, 0.8],
-          }}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="relative z-10"
-        >
-          <LazyImage
-            src={logoUrl}
-            alt="Loading..."
-            className="w-37.5 h-auto drop-shadow-2xl"
-          />
-        </motion.div>
-
-        {/* Loading Bar (Optional but looks premium) */}
-        {/* <div className="mt-8 w-24 h-1 bg-gray-100 rounded-full overflow-hidden relative z-10">
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: "100%" }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            className="w-full h-full bg-primary shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.5)]"
-          />
-        </div> */}
+  if (inline) {
+    return (
+      <div className="flex items-center justify-center min-h-100 w-full animate-in fade-in duration-500">
+        <Iconify
+          icon="svg-spinners:180-ring-with-bg"
+          width={40}
+          className="text-primary"
+        />
       </div>
-    </motion.div>
+    );
+  }
+
+  return (
+    <AnimatePresence>
+      {loading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={premiumTransition}
+          className="fixed inset-0 z-9999 flex items-center justify-center bg-white/80 backdrop-blur-sm"
+        >
+          <div className="relative flex flex-col items-center gap-6">
+            {/* Decorative Background Element */}
+            <div className="absolute -inset-10 bg-primary/5 blur-3xl rounded-full" />
+
+            {/* Animated Loader Container */}
+            <motion.div
+              animate={{
+                scale: [0.95, 1.05, 0.95],
+                opacity: [0.8, 1, 0.8],
+              }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative z-10"
+            >
+              <LazyImage
+                src={logoUrl}
+                alt="Loading..."
+                className="w-37.5 h-auto drop-shadow-2xl"
+              />
+            </motion.div>
+
+            {/* Spinner below logo */}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

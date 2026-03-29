@@ -91,8 +91,17 @@ export default function CouponView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  if (loading && !data) return <Loader />;
-
+  if (loading && !data) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Iconify
+          icon="svg-spinners:180-ring-with-bg"
+          width={40}
+          className="text-primary"
+        />
+      </div>
+    );
+  }
   if (error) {
     return (
       <div className="p-8 text-destructive font-bold text-center">
@@ -169,15 +178,13 @@ export default function CouponView() {
       const response = await axiosInstance.delete(
         `/coupons/${selectedDeleteCouponId}`,
       );
-      const updatedCoupons = data.filter(
-        (coupon) => coupon._id !== selectedDeleteCouponId,
-      );
-      dispatch(setData(updatedCoupons));
+      await fetchData();
       toast.success(response.data.message);
       closeDeleteConfirmation();
     } catch (error) {
       console.error("Error deleting coupon:", error);
       toast.error(t("Error deleting coupon"));
+      throw error;
     } finally {
       setLoadingDelete(false);
     }
@@ -191,21 +198,14 @@ export default function CouponView() {
         editedCoupon,
       );
 
-      const index = data.findIndex((c) => c._id === editedCoupon._id);
-      if (index !== -1) {
-        const updatedCoupons = [...data];
-        updatedCoupons[index] = {
-          ...updatedCoupons[index],
-          ...editedCoupon,
-        };
-        dispatch(setData(updatedCoupons));
-        toast.success(response.data.message);
-        setEditingCoupon(null);
-        setOpenModal(false);
-      }
+      await fetchData();
+      toast.success(response.data.message);
+      setEditingCoupon(null);
+      setOpenModal(false);
     } catch (error) {
       console.error("Error editing coupon:", error);
       toast.error(error.response?.data?.message || t("An error occurred"));
+      throw error;
     } finally {
       setLoadingDelete(false);
     }
@@ -215,13 +215,13 @@ export default function CouponView() {
     setLoadingDelete(true);
     try {
       const response = await axiosInstance.post("/coupons/create", newCoupon);
-      const coupondata = response.data.data;
-      dispatch(setData([...data, coupondata]));
+      await fetchData();
       toast.success(response.data.message);
       setNewCouponFormOpen(false);
     } catch (error) {
       console.error("Error creating new coupon:", error);
       toast.error(error.response?.data?.message || t("An error occurred"));
+      throw error;
     } finally {
       setLoadingDelete(false);
     }
@@ -308,18 +308,18 @@ export default function CouponView() {
                 />
                 <TableBody>
                   {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="h-24">
-                        <div className="flex justify-center items-center h-full">
-                          <Iconify
-                            icon="svg-spinners:180-ring-with-bg"
-                            width={40}
-                            className="text-primary"
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
+                   <TableRow>
+                     <TableCell colSpan={7} className="py-24">
+                       <div className="flex justify-center items-center h-full">
+                         <Iconify
+                           icon="svg-spinners:180-ring-with-bg"
+                           width={40}
+                           className="text-primary"
+                         />
+                       </div>
+                     </TableCell>
+                   </TableRow>
+                 ) : (
                     <>
                       {dataFiltered
                         .slice(

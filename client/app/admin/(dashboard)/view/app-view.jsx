@@ -128,8 +128,12 @@ export default function AppView() {
 
   if (data.loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader />
+      <div className="flex justify-center items-center h-full">
+        <Iconify
+          icon="svg-spinners:180-ring-with-bg"
+          width={40}
+          className="text-primary"
+        />
       </div>
     );
   }

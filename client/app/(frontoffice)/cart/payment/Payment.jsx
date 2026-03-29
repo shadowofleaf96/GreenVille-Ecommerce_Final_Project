@@ -130,14 +130,10 @@ const Payment = () => {
         latitude: shippingInfo.latitude,
         longitude: shippingInfo.longitude,
       };
-      console.log("Creating Order with Cart Items:", cartItems);
       const orderData = {
         customer_id: customer._id,
         order_items: cartItems.map((item) => {
           const price = item.discountPrice || item.price;
-          console.log(
-            `Processing item ${item.product}: price=${price} (discount=${item.discountPrice}, base=${item.price})`,
-          );
           return {
             product_id: item.product,
             quantity: item.quantity,
@@ -219,7 +215,7 @@ const Payment = () => {
       setLoading(false);
       router.push("/success");
     } catch (error) {
-      console.error("Error creating payment:", error);
+      console.error(error);
     }
   };
 

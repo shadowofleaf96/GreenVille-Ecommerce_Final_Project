@@ -5,77 +5,94 @@ import { Vendor } from "../models/Vendor.js";
 import { withTransaction } from "../utils/withTransaction.js";
 
 export const createProduct = async (req, res) => {
-  const product_images = req.files;
+  try {
+    const product_images = req.files;
 
-  if (!product_images || product_images.length === 0) {
-    return res.status(400).json({ message: "No images uploaded." });
-  }
-
-  const imagePaths = product_images.map((file) => file.path);
-
-  const {
-    sku,
-    product_name,
-    subcategory_id,
-    short_description,
-    long_description,
-    price,
-    discount_price,
-    option,
-    quantity,
-    status,
-    on_sale,
-    variants,
-  } = req.body;
-
-  const processedOption = Array.isArray(option) ? option[0] : option;
-
-  let processedVariants = [];
-  if (variants) {
-    try {
-      processedVariants =
-        typeof variants === "string" ? JSON.parse(variants) : variants;
-    } catch (e) {
-      console.error("Error parsing variants", e);
-      processedVariants = [];
+    if (!product_images || product_images.length === 0) {
+      return res.status(400).json({ message: "No images uploaded." });
     }
-  }
 
-  const product = new Product({
-    sku,
-    product_images: imagePaths,
-    subcategory_id,
-    product_name,
-    short_description,
-    long_description,
-    price,
-    discount_price,
-    option: processedOption,
-    quantity,
-    status,
-    on_sale,
-    variants: processedVariants,
-  });
+    const imagePaths = product_images.map((file) => file.path);
 
-  if (req.user && req.user.role === "vendor") {
-    const vendorProfile = await Vendor.findOne({ user: req.user._id });
-    if (vendorProfile) {
-      product.vendor = vendorProfile._id;
+    const productData = { ...req.body };
+    Object.keys(productData).forEach((key) => {
+      const match = key.match(/^(.+)\[(.+)\]$/);
+      if (match) {
+        const field = match[1];
+        const subField = match[2];
+        if (!productData[field]) productData[field] = {};
+        productData[field][subField] = productData[key];
+        delete productData[key];
+      }
+    });
+
+    const {
+      sku,
+      product_name,
+      subcategory_id,
+      short_description,
+      long_description,
+      price,
+      discount_price,
+      option,
+      quantity,
+      status,
+      on_sale,
+      variants,
+    } = productData;
+
+    const processedOption = Array.isArray(option) ? option[0] : option;
+
+    let processedVariants = [];
+    if (variants) {
+      try {
+        processedVariants =
+          typeof variants === "string" ? JSON.parse(variants) : variants;
+      } catch (e) {
+        console.error("Error parsing variants", e);
+        processedVariants = [];
+      }
     }
+
+    const product = new Product({
+      sku,
+      product_images: imagePaths,
+      subcategory_id,
+      product_name,
+      short_description,
+      long_description,
+      price,
+      discount_price,
+      option: processedOption,
+      quantity,
+      status,
+      on_sale,
+      variants: processedVariants,
+    });
+
+    if (req.user && req.user.role === "vendor") {
+      const vendorProfile = await Vendor.findOne({ user: req.user._id });
+      if (vendorProfile) {
+        product.vendor = vendorProfile._id;
+      }
+    }
+
+    const savedProduct = await product.save();
+    const subcategory = await SubCategory.findById(subcategory_id).lean();
+
+    const enrichedProduct = {
+      ...savedProduct.toObject(),
+      subcategory: subcategory,
+    };
+
+    res.status(201).json({
+      message: "Product created successfully",
+      data: enrichedProduct,
+    });
+  } catch (error) {
+    console.error("Error creating product:", error);
+    res.status(400).json({ message: error.message || "Error creating product" });
   }
-
-  const savedProduct = await product.save();
-  const subcategory = await SubCategory.findById(subcategory_id).lean();
-
-  const enrichedProduct = {
-    ...savedProduct.toObject(),
-    subcategory: subcategory,
-  };
-
-  res.status(201).json({
-    message: "Product created successfully",
-    data: enrichedProduct,
-  });
 };
 
 export const searchProducts = async (req, res) => {
@@ -279,115 +296,120 @@ export const getProductById = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-  const id = req.params.id;
-  const newData = req.body;
-  const product_images = req.files;
+  try {
+    const id = req.params.id;
+    const newData = req.body;
+    const product_images = req.files;
 
-  newData.last_update = Date.now();
+    newData.last_update = Date.now();
 
-  const product = await Product.findById(id);
+    const product = await Product.findById(id);
 
-  if (!product) {
-    return res.status(404).json({ message: "Invalid product id" });
-  }
-
-  if (req.user.role === "vendor") {
-    const vendorProfile = await Vendor.findOne({ user: req.user._id });
-
-    if (!vendorProfile) {
-      return res.status(403).json({ message: "Vendor profile not found" });
+    if (!product) {
+      return res.status(404).json({ message: "Invalid product id" });
     }
 
-    if (
-      product.vendor &&
-      product.vendor.toString() !== vendorProfile._id.toString()
-    ) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to edit this product" });
+    if (req.user.role === "vendor") {
+      const vendorProfile = await Vendor.findOne({ user: req.user._id });
+
+      if (!vendorProfile) {
+        return res.status(403).json({ message: "Vendor profile not found" });
+      }
+
+      if (
+        product.vendor &&
+        product.vendor.toString() !== vendorProfile._id.toString()
+      ) {
+        return res
+          .status(403)
+          .json({ message: "You are not authorized to edit this product" });
+      }
     }
-  }
 
-  if (product_images && product_images.length > 5) {
-    return res.status(400).json({ message: "Maximum 5 images allowed." });
-  }
-
-  const imagePaths = product_images
-    ? product_images.map((file) => file.path)
-    : [];
-
-  Object.keys(newData).forEach((key) => {
-    const match = key.match(/^(.+)\[(.+)\]$/);
-    if (match) {
-      const field = match[1];
-      const subField = match[2];
-
-      newData[`${field}.${subField}`] = newData[key];
-      delete newData[key];
+    if (product_images && product_images.length > 5) {
+      return res.status(400).json({ message: "Maximum 5 images allowed." });
     }
-  });
 
-  if (newData.variants) {
-    try {
-      newData.variants =
-        typeof newData.variants === "string"
-          ? JSON.parse(newData.variants)
-          : newData.variants;
-    } catch (e) {
-      console.error("Error parsing variants in update", e);
+    const imagePaths = product_images
+      ? product_images.map((file) => file.path)
+      : [];
+
+    Object.keys(newData).forEach((key) => {
+      const match = key.match(/^(.+)\[(.+)\]$/);
+      if (match) {
+        const field = match[1];
+        const subField = match[2];
+
+        newData[`${field}.${subField}`] = newData[key];
+        delete newData[key];
+      }
+    });
+
+    if (newData.variants) {
+      try {
+        newData.variants =
+          typeof newData.variants === "string"
+            ? JSON.parse(newData.variants)
+            : newData.variants;
+      } catch (e) {
+        console.error("Error parsing variants in update", e);
+      }
     }
+
+    if (newData.option && typeof newData.option === "string") {
+      newData.option = newData.option
+        .split(",")
+        .map((opt) => opt.trim())
+        .filter((opt) => opt);
+    }
+
+    if (newData.status) {
+      newData.status = newData.status === "true";
+    }
+    if (newData.on_sale) {
+      newData.on_sale = newData.on_sale === "true";
+    }
+
+    // Explicitly cast numeric fields to ensure updates work correctly
+    if (newData.quantity !== undefined && newData.quantity !== "") {
+      newData.quantity = Number(newData.quantity);
+    }
+    if (newData.price !== undefined && newData.price !== "") {
+      newData.price = Number(newData.price);
+    }
+    if (newData.discount_price !== undefined && newData.discount_price !== "") {
+      newData.discount_price = Number(newData.discount_price);
+    }
+
+    const updateData = {
+      ...newData,
+    };
+
+    if (imagePaths && imagePaths.length > 0) {
+      updateData.product_images = imagePaths;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    const subcategory = await SubCategory.findById(
+      newData.subcategory_id || product.subcategory_id,
+    ).lean();
+
+    const enrichedProduct = {
+      ...updatedProduct.toObject(),
+      subcategory: subcategory,
+    };
+
+    res.status(200).json({
+      message: "Product edited successfully",
+      data: enrichedProduct,
+    });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(400).json({ message: error.message || "Error updating product" });
   }
-
-  if (newData.option && typeof newData.option === "string") {
-    newData.option = newData.option
-      .split(",")
-      .map((opt) => opt.trim())
-      .filter((opt) => opt);
-  }
-
-  if (newData.status) {
-    newData.status = newData.status === "true";
-  }
-  if (newData.on_sale) {
-    newData.on_sale = newData.on_sale === "true";
-  }
-
-  // Explicitly cast numeric fields to ensure updates work correctly
-  if (newData.quantity !== undefined && newData.quantity !== "") {
-    newData.quantity = Number(newData.quantity);
-  }
-  if (newData.price !== undefined && newData.price !== "") {
-    newData.price = Number(newData.price);
-  }
-  if (newData.discount_price !== undefined && newData.discount_price !== "") {
-    newData.discount_price = Number(newData.discount_price);
-  }
-
-  const updateData = {
-    ...newData,
-  };
-
-  if (imagePaths && imagePaths.length > 0) {
-    updateData.product_images = imagePaths;
-  }
-
-  const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
-    new: true,
-  });
-
-  const subcategory = await SubCategory.findById(
-    newData.subcategory_id || product.subcategory_id,
-  ).lean();
-
-  const enrichedProduct = {
-    ...updatedProduct.toObject(),
-    subcategory: subcategory,
-  };
-
-  res.status(200).json({
-    message: "Product edited successfully",
-    data: enrichedProduct,
-  });
 };
 
 export const deleteProduct = async (req, res) => {

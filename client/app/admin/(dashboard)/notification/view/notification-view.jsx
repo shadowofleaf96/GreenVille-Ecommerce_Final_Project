@@ -92,8 +92,17 @@ export default function NotificationView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  if (loading && !data) return <Loader />;
-
+  if (loading && !data) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Iconify
+          icon="svg-spinners:180-ring-with-bg"
+          width={40}
+          className="text-primary"
+        />
+      </div>
+    );
+  }
   if (error) {
     return (
       <div className="p-8 text-destructive font-bold text-center">
@@ -293,18 +302,18 @@ export default function NotificationView() {
                 />
                 <TableBody>
                   {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="h-24">
-                        <div className="flex justify-center items-center h-full">
-                          <Iconify
-                            icon="svg-spinners:180-ring-with-bg"
-                            width={40}
-                            className="text-primary"
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
+                   <TableRow>
+                     <TableCell colSpan={6} className="py-24">
+                       <div className="flex justify-center items-center h-full">
+                         <Iconify
+                           icon="svg-spinners:180-ring-with-bg"
+                           width={40}
+                           className="text-primary"
+                         />
+                       </div>
+                     </TableCell>
+                   </TableRow>
+                 ) : (
                     <>
                       {dataFiltered
                         .slice(

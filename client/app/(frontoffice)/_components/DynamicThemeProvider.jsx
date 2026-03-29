@@ -44,10 +44,6 @@ const DynamicThemeProvider = ({ children }) => {
     if (!activeSettings && cachedSettings) {
       try {
         activeSettings = JSON.parse(cachedSettings);
-        console.log(
-          "DynamicThemeProvider: Loaded cached settings:",
-          activeSettings,
-        );
       } catch (e) {
         console.error("Failed to parse cached settings", e);
       }
@@ -64,10 +60,8 @@ const DynamicThemeProvider = ({ children }) => {
         root.style.setProperty("--color-primary", primary_color);
         root.style.setProperty("--primary", `hsl(${hexToHsl(primary_color)})`);
         root.style.setProperty("--ring", `hsl(${hexToHsl(primary_color)})`);
-        console.log(
-          "DynamicThemeProvider: Applied primary color:",
-          primary_color,
-        );
+        root.style.setProperty("--primary", `hsl(${hexToHsl(primary_color)})`);
+        root.style.setProperty("--ring", `hsl(${hexToHsl(primary_color)})`);
       }
       if (secondary_color) {
         root.style.setProperty("--color-golden", secondary_color);
@@ -106,10 +100,6 @@ const DynamicThemeProvider = ({ children }) => {
         "--font-heading",
         `"${secondaryFont}", sans-serif`,
       );
-      console.log("DynamicThemeProvider: Applied fonts:", {
-        primaryFont,
-        secondaryFont,
-      });
     }
   }, [settings]);
 

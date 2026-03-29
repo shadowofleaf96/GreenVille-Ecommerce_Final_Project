@@ -328,8 +328,6 @@ export default function VendorView() {
     }
   };
 
-  if (isLoading && vendors.length === 0) return <Loader />;
-
   return (
     <motion.div
       variants={staggerContainer}

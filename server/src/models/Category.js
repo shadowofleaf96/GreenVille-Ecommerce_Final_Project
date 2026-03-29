@@ -35,16 +35,13 @@ const CategorySchema = new mongoose.Schema(
 );
 
 CategorySchema.pre("save", async function () {
-  try {
-    const validatedData = await CategoryJoiSchema.validateAsync(
-      this.toObject(),
-    );
+  const validatedData = await CategoryJoiSchema.validateAsync(
+    this.toObject(),
+  );
 
-    this.category_name = validatedData.category_name;
-    this.status = validatedData.status;
-  } catch (error) {
-    console.error(error);
-  }
+  this.category_name = validatedData.category_name;
+  this.status = validatedData.status;
+  this.category_image = validatedData.category_image;
 });
 
 export const Category = mongoose.model("Categories", CategorySchema);

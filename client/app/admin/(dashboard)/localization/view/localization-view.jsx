@@ -177,8 +177,17 @@ export default function LocalizationView() {
 
   const notFound = !dataFiltered.length && !loading;
 
-  if (loading && !data.length) return <Loader />;
-
+  if (loading && !data.length) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Iconify
+          icon="svg-spinners:180-ring-with-bg"
+          width={40}
+          className="text-primary"
+        />
+      </div>
+    );
+  }
   return (
     <motion.div
       variants={staggerContainer}
@@ -231,18 +240,18 @@ export default function LocalizationView() {
                 />
                 <TableBody>
                   {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="h-24">
-                        <div className="flex justify-center items-center h-full">
-                          <Iconify
-                            icon="svg-spinners:180-ring-with-bg"
-                            width={40}
-                            className="text-primary"
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
+                   <TableRow>
+                     <TableCell colSpan={6} className="py-24">
+                       <div className="flex justify-center items-center h-full">
+                         <Iconify
+                           icon="svg-spinners:180-ring-with-bg"
+                           width={40}
+                           className="text-primary"
+                         />
+                       </div>
+                     </TableCell>
+                   </TableRow>
+                 ) : (
                     <>
                       {dataFiltered
                         .slice(

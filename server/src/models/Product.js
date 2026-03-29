@@ -156,11 +156,7 @@ productSchema.index(
 );
 
 productSchema.pre("save", async function () {
-  try {
-    await productJoiSchema.validateAsync(this.toObject());
-  } catch (error) {
-    console.error(error);
-  }
+  await productJoiSchema.validateAsync(this.toObject());
 });
 
 export const Product = mongoose.model("Product", productSchema);

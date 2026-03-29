@@ -25,13 +25,18 @@ export default function UserTableHead({
       <TableRow className="border-b border-gray-200">
         <TableHead className="w-12">
           <Checkbox
-            checked={rowCount > 0 && numSelected === rowCount}
+            checked={
+              numSelected === rowCount && rowCount > 0
+                ? true
+                : numSelected > 0
+                ? "indeterminate"
+                : false
+            }
             onCheckedChange={(checked) => {
               onSelectAllClick({
-                target: { checked },
+                target: { checked: checked === "indeterminate" ? true : checked },
               });
             }}
-            indeterminate={numSelected > 0 && numSelected < rowCount}
           />
         </TableHead>
 

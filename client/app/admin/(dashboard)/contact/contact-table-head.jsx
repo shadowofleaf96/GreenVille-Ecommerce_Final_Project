@@ -28,9 +28,17 @@ export default function ContactTableHead({
       <TableRow className="hover:bg-transparent">
         <ShadcnTableHead className="w-12 px-4">
           <Checkbox
-            checked={rowCount > 0 && numSelected === rowCount}
+            checked={
+              numSelected === rowCount && rowCount > 0
+                ? true
+                : numSelected > 0
+                ? "indeterminate"
+                : false
+            }
             onCheckedChange={(checked) => {
-              onSelectAllClick({ target: { checked } });
+              onSelectAllClick({
+                target: { checked: checked === "indeterminate" ? true : checked },
+              });
             }}
           />
         </ShadcnTableHead>

@@ -1,4 +1,4 @@
-import "dotenv/config"
+import "dotenv/config";
 import api from "./routes/api.js";
 import express from "express";
 import path from "path";
@@ -51,6 +51,7 @@ const corsOptions = {
     "X-Requested-With",
     "Accept",
     "Origin",
+    "X-Forwarded-For",
   ],
 };
 
@@ -121,5 +122,22 @@ app.use((req, res, next) => {
 });
 
 app.use("/", api);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("❌ Global Error:", err.stack);
+
+  const status = err.status || 500;
+  const message =
+    process.env.NODE_ENV === "development"
+      ? err.message
+      : "An unexpected error occurred. Please try again later.";
+
+  res.status(status).json({
+    status,
+    message,
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
+});
 
 export default app;

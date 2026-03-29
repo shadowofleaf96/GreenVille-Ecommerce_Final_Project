@@ -140,7 +140,6 @@ export default function ProductPage() {
     quantityFilter,
   ]);
 
-  if (loading && !data) return <Loader />;
 
   if (error) {
     return (
@@ -224,12 +223,6 @@ export default function ProductPage() {
       formData.append("price", editedProduct.price);
       formData.append("discount_price", editedProduct.discount_price);
       formData.append("option", editedProduct.option);
-      console.log(
-        "DEBUG: Updating quantity:",
-        editedProduct.quantity,
-        "Type:",
-        typeof editedProduct.quantity,
-      );
       formData.append("quantity", editedProduct.quantity);
       formData.append("status", editedProduct.status);
       formData.append("on_sale", editedProduct.on_sale);
@@ -277,9 +270,10 @@ export default function ProductPage() {
       toast.success(response.data.message);
       setEditingProduct(null);
       setOpenModal(false);
-      fetchData();
+      await fetchData();
     } catch (error) {
       toast.error("Error: " + (error.response?.data?.message || error.message));
+      throw error;
     } finally {
       setLoadingDelete(false);
     }
@@ -290,10 +284,11 @@ export default function ProductPage() {
     try {
       await axiosInstance.delete(`/products/${productId}`);
       toast.success(t("Product deleted successfully"));
-      fetchData();
+      await fetchData();
       setSelected([]);
     } catch (error) {
       toast.error("Error: " + (error.response?.data?.message || error.message));
+      throw error;
     } finally {
       setLoadingDelete(false);
       closeDeleteConfirmation();
@@ -324,12 +319,14 @@ export default function ProductPage() {
 
       await axiosInstance.post("/products", formData);
       toast.success(t("Product created successfully"));
-      fetchData();
-    } catch (error) {
-      console.log(error);
-      toast.error(t("Error creating product"));
-    } finally {
+      setPage(0);
+      await fetchData();
       setNewProductFormOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || t("Error creating product"));
+      throw error;
+    } finally {
       setLoadingDelete(false);
     }
   };
@@ -414,7 +411,7 @@ export default function ProductPage() {
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="h-24">
+                      <TableCell colSpan={9} className="py-24">
                         <div className="flex justify-center items-center h-full">
                           <Iconify
                             icon="svg-spinners:180-ring-with-bg"

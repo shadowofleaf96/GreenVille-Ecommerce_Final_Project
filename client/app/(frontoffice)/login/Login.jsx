@@ -216,7 +216,22 @@ const Login = () => {
 
       <motion.div {...scaleIn} className="relative z-10 w-full max-w-lg">
         <Card className="rounded-4xl sm:rounded-[2.5rem] border-none shadow-2xl bg-white/95 overflow-hidden ring-1 ring-black/5">
-          <CardContent className="p-6 sm:p-10 md:p-12">
+          <CardContent className="p-6 sm:p-10 md:p-12 relative">
+            <div className="absolute left-6 top-6 sm:left-10 sm:top-10">
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors group"
+              >
+                <Iconify
+                  icon="solar:arrow-left-bold-duotone"
+                  className="group-hover:-translate-x-1 transition-transform"
+                  width={20}
+                />
+                <span className="text-xs font-black uppercase tracking-widest">
+                  {t("back") || "Back"}
+                </span>
+              </Link>
+            </div>
             <div className="flex flex-col items-center">
               <Link
                 href="/"

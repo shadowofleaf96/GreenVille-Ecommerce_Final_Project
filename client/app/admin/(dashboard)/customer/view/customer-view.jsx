@@ -90,7 +90,6 @@ export default function CustomerView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  if (loading && !data) return <Loader />;
 
   if (error) {
     return (
@@ -305,7 +304,7 @@ export default function CustomerView() {
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="h-24">
+                      <TableCell colSpan={8} className="py-24">
                         <div className="flex justify-center items-center h-full">
                           <Iconify
                             icon="svg-spinners:180-ring-with-bg"

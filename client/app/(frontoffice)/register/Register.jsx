@@ -32,7 +32,6 @@ const RegistrationForm = () => {
     watch,
     reset,
   } = useForm();
-  const navigate = useNavigate();
   const [loadingSave, setLoadingSave] = useState(false);
   const [searchParams] = useSearchParams();
   const [setRefreshReCaptcha] = useState(false);
@@ -45,6 +44,7 @@ const RegistrationForm = () => {
 
   const isLoggedin = localStorage.getItem("customer_access_token");
   const dispatch = useDispatch();
+  const router = useRouter();
   useEffect(() => {
     if (isLoggedin) {
       const redirect = searchParams.get("redirect");
@@ -103,7 +103,6 @@ const RegistrationForm = () => {
           router.push("/");
         }, 1500);
       } else {
-        // Fallback for strict verification (shouldn't happen with current controller)
         router.push("/login");
       }
     } catch (error) {
@@ -136,7 +135,22 @@ const RegistrationForm = () => {
         className="relative z-10 w-full sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg"
       >
         <Card className="rounded-4xl sm:rounded-[2.5rem] border-none shadow-2xl bg-white overflow-hidden ring-1 ring-black/5">
-          <CardContent className="p-6 sm:p-10 md:p-12">
+          <CardContent className="p-6 sm:p-10 md:p-12 relative">
+            <div className="absolute left-6 top-6 sm:left-10 sm:top-10">
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors group"
+              >
+                <Iconify
+                  icon="solar:arrow-left-bold-duotone"
+                  className="group-hover:-translate-x-1 transition-transform"
+                  width={20}
+                />
+                <span className="text-xs font-black uppercase tracking-widest">
+                  {t("back") || "Back"}
+                </span>
+              </Link>
+            </div>
             <div className="flex flex-col items-center">
               <Link
                 href="/"
@@ -261,7 +275,7 @@ const RegistrationForm = () => {
                             message: t("PasswordMinLength"),
                           },
                         })}
-                        placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                        placeholder="********"
                         className={`h-14 pl-12 rounded-2xl bg-gray-50/50 border-gray-100 focus:ring-primary/20 transition-all font-bold ${
                           errors.password ? "border-red-500 bg-red-50/50" : ""
                         }`}
@@ -293,7 +307,7 @@ const RegistrationForm = () => {
                             value === watch("password") ||
                             t("PasswordsDoNotMatch"),
                         })}
-                        placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                        placeholder="********"
                         className={`h-14 pl-12 rounded-2xl bg-gray-50/50 border-gray-100 focus:ring-primary/20 transition-all font-bold ${
                           errors.confirmPassword
                             ? "border-red-500 bg-red-50/50"

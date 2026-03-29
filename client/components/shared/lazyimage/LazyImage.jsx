@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import Iconify from "../iconify";
+import { cn } from "@/lib/utils";
 
 const LazyImage = ({
   src,
@@ -9,26 +11,32 @@ const LazyImage = ({
   wrapperClassName,
   style,
   placeholderClassName,
+  loaderSize = 40,
   ...props
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <div className={`${wrapperClassName || "relative"}`} style={style}>
-      {!isLoaded && (
-        <div
-          className={`absolute inset-0 bg-gray-100 ${
-            placeholderClassName || ""
-          }`}
-          style={{
-            zIndex: 1,
-            background:
-              "linear-gradient(110deg, #f3f4f6 8%, #e5e7eb 18%, #f3f4f6 33%)",
-            backgroundSize: "200% 100%",
-            animation: "shimmer 1.5s linear infinite",
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {!isLoaded && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={cn(
+              "absolute inset-0 flex items-center justify-center bg-gray-50/50 backdrop-blur-[2px] z-10",
+              placeholderClassName,
+            )}
+          >
+            <Iconify
+              icon="svg-spinners:180-ring-with-bg"
+              width={loaderSize}
+              className="text-primary/40"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.img
         initial={{ opacity: 0 }}
